@@ -4,13 +4,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "password-generator"
-version = "1.0.0"
-description = "A configurable password generation tool"
+version = "2.0.0"
+description = "A professional, async password generation tool with advanced security features"
 readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.9"
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "Intended Audience :: System Administrators",
     "License :: OSI Approved :: MIT License",
@@ -19,24 +19,69 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Security",
     "Topic :: Utilities",
 ]
 dependencies = [
     "psutil>=5.9.0",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "qrcode[pil]>=7.0",
+    "bcrypt>=4.0.0",
+    "argon2-cffi>=23.0.0",
+    "tqdm>=4.65.0",
+    "aiofiles>=23.0.0",
+    "rich>=13.0.0",
+    "click>=8.0.0",
+    "cryptography>=41.0.0",
+    "numpy>=1.24.0",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=7.0.0",
     "pytest-cov>=4.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-benchmark>=4.0.0",
+    "pytest-memray>=1.5.0",
     "black>=23.0.0",
     "ruff>=0.1.0",
     "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
+    "bandit>=1.7.0",
+    "safety>=2.0.0",
+    "types-aiofiles>=23.0.0",
+]
+benchmark = [
+    "pytest-benchmark>=4.0.0",
+    "py-spy>=0.3.0",
+    "memory-profiler>=0.60.0",
+    "line-profiler>=4.0.0",
 ]
 
 [project.scripts]
 passgen = "password_generator.cli:main"
+passgen-async = "password_generator.async_cli:main"
+
+[project.entry-points."password_generator.generators"]
+random = "password_generator.plugins.generators:RandomGenerator"
+pronounceable = "password_generator.plugins.generators:PronounceableGenerator"
+diceware = "password_generator.plugins.generators:DicewareGenerator"
+xkcd = "password_generator.plugins.generators:XKCDGenerator"
+
+[project.entry-points."password_generator.transformers"]
+leet = "password_generator.plugins.transformers:LeetTransformer"
+symbols = "password_generator.plugins.transformers:SymbolTransformer"
+case = "password_generator.plugins.transformers:CaseTransformer"
+strength = "password_generator.plugins.transformers:StrengthAnalyzer"
+
+[project.entry-points."password_generator.outputs"]
+json = "password_generator.plugins.outputs:JSONOutput"
+csv = "password_generator.plugins.outputs:CSVOutput"
+hash = "password_generator.plugins.outputs:HashOutput"
+qr = "password_generator.plugins.outputs:QROutput"
+file = "password_generator.plugins.outputs:FileOutput"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/password_generator"]
@@ -49,7 +94,7 @@ target-version = ['py39']
 target-version = "py39"
 line-length = 100
 select = [
-    "E", "W", "F", "I", "N", "UP", "B", "C4", "SIM",
+    "E", "W", "F", "I", "N", "UP", "B", "C4", "SIM", "S", "ASYNC", "C90", "PL", "RUF",
 ]
 ignore = [
     "E501",
@@ -59,7 +104,7 @@ ignore = [
 convention = "google"
 
 [tool.ruff.per-file-ignores]
-"tests/*" = ["S101"]
+"tests/*" = ["S101", "PLR2004"]
 
 [tool.mypy]
 python_version = "3.9"
@@ -67,6 +112,8 @@ warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
 disallow_incomplete_defs = true
+show_error_codes = true
+strict_optional = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -77,8 +124,16 @@ addopts = [
     "--strict-markers",
     "--strict-config",
     "--verbose",
+    "--cov=password_generator",
+    "--cov-report=term-missing",
 ]
+asyncio_mode = "auto"
+benchmark_enable = true
 
 [tool.coverage.run]
 source = ["src"]
 branch = true
+
+[tool.bandit]
+exclude_dirs = ["tests", "venv", ".venv"]
+skips = ["B101", "B601"]
