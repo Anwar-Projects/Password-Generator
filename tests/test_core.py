@@ -3,6 +3,7 @@
 import pytest
 
 from password_generator.core import PasswordGenerator
+from password_generator.transformers import generate_numbered_words
 
 
 class TestPasswordGeneratorInit:

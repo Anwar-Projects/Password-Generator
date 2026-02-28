@@ -39,8 +39,8 @@ class PasswordGenerator:
         ]
         self.max_permutations = max_permutations
         self.all_words: Set[str] = set()
-        if seed is not None:
-            random.seed(seed)
+        # Use instance-local Random for proper reproducibility
+        self._rng = random.Random(seed)
 
     def generate_capitalized_and_lowercase(self) -> Set[str]:
         """Generate capitalized and lowercase versions of dictionary words."""
@@ -53,16 +53,20 @@ class PasswordGenerator:
         return result
 
     def generate_random_permutations(
-        self, existing_words: Set[str], length: int, count: int
+        self,
+        existing_words: Set[str] = None,  # type: ignore
+        length: int = 4,
+        count: int = 100,
     ) -> Set[str]:
         """Generate random character permutations instead of exhaustive ones."""
         result = set()
         alphabet = string.ascii_lowercase
+        existing = existing_words or set()
 
         for _ in range(min(count, self.max_permutations)):
-            chars = random.choices(alphabet, k=length)
+            chars = self._rng.choices(alphabet, k=length)
             word = capitalize_first_letter("".join(chars))
-            if word not in existing_words:
+            if word not in existing:
                 result.add(word)
 
         return result
@@ -98,7 +102,7 @@ class PasswordGenerator:
     ) -> Set[str]:
         """Generate all password variations from base words."""
         result = set(base_words)
-        default_separators = "!@#$%^\u0026*()_+-=[]{}|;:'\",.<>/?"
+        default_separators = "!@#$%^&*()_+-=[]{}|;:'\",.<>/?"
         sep_list = list(separators or default_separators)
 
         if enable_numbers:
@@ -135,7 +139,7 @@ class PasswordGenerator:
         max_digit_length: int = 4,
     ) -> Set[str]:
         """Generate all password variations."""
-        self.all_words = self.generate_capitalized_and_lowercase()
+        self.all_words.update(self.generate_capitalized_and_lowercase())
 
         if include_permutations:
             perms = self.generate_random_permutations(
@@ -143,7 +147,7 @@ class PasswordGenerator:
             )
             self.all_words.update(perms)
 
-        self.all_words = self.apply_replacements(self.all_words)
+        self.all_words.update(self.apply_replacements(self.all_words))
 
         final_words = self.generate_variations(
             self.all_words,
