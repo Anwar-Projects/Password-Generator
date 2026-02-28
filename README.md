@@ -1,52 +1,230 @@
-# Password-Generator
-Password Generation Script with CPU/GPU Management, Error Handling, and Terminal Output
+# Password Generator
 
-Real-time Terminal Output: Passwords are printed as they are generated, which helps you monitor progress.
-Error Handling: Wrapped critical sections of the code in try-except blocks, printing detailed error messages if any exceptions occur.
-CPU Monitoring: Introduced a background thread that continuously monitors CPU usage using the psutil library. If the CPU usage exceeds 60%, the script temporarily pauses to reduce the load.
-GPU Management: Since Python doesn't have direct control over GPU usage without specific libraries (like TensorFlow or PyTorch), the GPU handling in this script is a placeholder (MAX_GPU_USAGE). If you are running this in an environment that supports GPU monitoring, you can integrate a GPU management library for advanced control.
-Efficient Resource Usage: Implemented throttling on CPU overuse, sleeping the process if CPU consumption goes above the defined threshold.
+A configurable password generation tool with multiple transformation modes, CPU throttling, and CLI interface.
 
-Prerequisites:
-Install the psutil library for CPU monitoring:
-pip install psutil
+## Features
 
-Running the Script:
-Save the script to a Python file (password_generator.py).
-Run the script:
-python password_generator.py
+- **Multiple Transformations**: Capitalization, character replacement, random permutations
+- **CLI Interface**: Full command-line interface with argparse
+- **Type Hints**: Fully typed codebase
+- **Performance Limits**: Built-in protections against runaway computation
+- **CPU Monitoring**: Automatic throttling when CPU usage exceeds thresholds
+- **Configurable**: Extensive options for customization
 
-How to Run the Script:
-Save the script to a file named passgen.py.
-Open your terminal.
-Navigate to the directory where the script is located.
-Run the script using the command:
+## Installation
 
-You’ll be able to see the passwords as they are generated in real-time, along with detailed error messages if anything goes wrong, and the script will automatically adjust for CPU usage to stay within the defined limits.
+### From Source
 
-Troubleshooting:
-If you continue facing issues, consider breaking down the script into smaller functions and testing them individually to identify the bottleneck. Adjusting how and when results are written to the output file can also help in managing memory usage effectively. If you have a specific line of code or a section causing issues, feel free to share it for more targeted suggestions!
+```bash
+# Clone the repository
+git clone https://github.com/Anwar-Projects/Password-Generator.git
+cd Password-Generator
 
-Password Requirements:
+# Install with development dependencies
+make install-dev
+```
 
-This Python script generates the following types of passwords and store them in a single file called passwords.txt as an output to all the below mentioned instructions:
+### Basic Install
 
-1. Write all the words from the dictionary in lowercase with only first alphabet of the word should be Capital letter. Example: Animal, Beautiful, Dog
-2. Write all the words from the dictionary words with all letters in lowercase. example dog, hospital.
-3. Write all the permutation and combination of the 26 characters from the alphabets list wherein the total alphabet count should not be less than 4 alphabets and not more than 12 and if the given word is already in step#1, then ignore the word. The first alphabet of the word should be a capital letter.
-4. Replace the characters such as: a with @, o with 0, i with 1, s with 5, for all the words found in step#1, 2 & 3 and get a complete list, example: @pple
-5. Replace the characters such as: o with 0 for all the words found in step#1, 2 & 3 and get a complete list irrespective of the case sensitivity, for example, both o & O should be replaced with 0, example: 0range
-6. Replace the characters such as: i with 1 for all the words found in step#1, 2 & 3 and get a complete list irrespective of the case sensitivity, example, for example, both i & I should be replaced with 1; 1nd1a for India
-7. Replace the characters such as: i with ! for all the words found in step#1, 2 & 3 and get a complete list irrespective of the case sensitivity, example, for example, both i & I should be replaced with !; !nd!a for India
-8. Replace the characters such as: s with 5, for all the words found in step#1, 2 & 3 and get a complete list irrespective of the case sensitivity of the letter, example: For example, both s & S should be replaced with 5; 5even for Seven
-9. For all the words found in step 1, 2 & 3 replace a with @, s with 5, o with 0, I wish I wherever found in the given word irrespective of the case sensitivity of the letter. For example, both i & I should be replaced with 1.
-10. For all the words found in step#1, 2, 3, 4, 5 & 6 add in front of all these words with 4-digit numbers in such a way that all permutation and combinations of the 4-digit numbers are taken from 0 to 9 and between the alphabets and the digits the following characters must be inserted !@#$%^&*()_+-=[]{}|;:'",.<>/?. Not all these characters in a single word but one by one for each and every word found in step 1, 2, 3, 4, 5 & 6.  Example dictionary@1234, dictionary +4321, dictionary =0123
-11. For all the words found in step#1, 2, 3, 4, 5 & 6 add in front of all these words with 3-digit numbers in such a way that all permutation and combinations of the 3-digit numbers are taken from 0 to 9 and between the alphabets and the digits the following characters must be inserted !@#$%^&*()_+-=[]{}|;:'",.<>/?. Not all these characters in a single word but one by one for each and every word found in step 1, 2, 3, 4, 5 & 6.  Example dictionary@123, dictionary +432, dictionary =012
-12. For all the words found in step#1, 2, 3, 4, 5 & 6 add in front of all these words with 2-digit numbers in such a way that all permutation and combinations of the 2-digit numbers are taken from 0 to 9 and between the alphabets and the digits the following characters must be inserted !@#$%^&*()_+-=[]{}|;:'",.<>/?. Not all these characters in a single word but one by one for each and every word found in step 1, 2, 3, 4, 5 & 6.  Example dictionary@14, @pple+41, b0y=03
-13. For all the words found in step#1, 2, 3, 4, 5 & 6 add in front of all these words with 1-digit numbers in such a way that all permutation and combinations of the 1-digit numbers are taken from 0 to 9 and between the alphabets and before the digits the following characters must be inserted !@#$%^&*()_+-=[]{}|;:'",.<>/?. Not all these characters in a single word but one by one for each and every word found in step 1, 2, 3, 4, 5 & 6.  Example dictionary@1, dictionary#2, dictionary!3
-14. Write all the dictionary words found in step 1, 2, 3, 4, 5 & 6 with '@' symbol in front of the dictionary word and then 1-digit numbers after the word in such a way that all permutation and combinations of the 3-digit numbers from 0 to 9 are met. Example d1ct10n@ry@1, apple@2, boy@3
-15. Write all the dictionary words found in step 1, 2, 3, 4, 5 & 6 and add 1-digit number after these words in such a way that all permutation and combinations of the 0 to 9 are taken. Example d1ct10n@ry3, apple2, boy1 
-16. Write all the dictionary words found in step 1, 2, 3, 4, 5 & 6 and add 2-digit number after these words in such a way that all permutation and combinations of the 0 to 9 are taken. Example d1ct10n@ry13, apple@2, boy@1 
-17. Write all the dictionary words found in step 1, 2, 3, 4, 5 & 6 and add 3-digit number after these words in such a way that all permutation and combinations of the 0 to 9 are taken. Example d1ct10n@ry130, apple@279, boy@134
-18. For the words found as an output from step 14, 15 and 16, add the following characters in the end one by one and generate the list of new words: !@#$%^&*()_+-=[]{}|;:'",.<>/?
-19. Write all the dictionary words found in step 1, 2, 3, 4, 5 & 6 and add 4-digit number after these words in such a way that all permutation and combinations of the 0 to 9 are taken. Example d1ct10n@ry1302, apple@2791, boy@1340
+```bash
+pip install -e .
+```
+
+## Quick Start
+
+```bash
+# Generate passwords with default settings
+passgen
+
+# Generate with custom dictionary
+passgen --dictionary "apple,banana,car"
+
+# Generate with limited output
+passgen --max-permutations 1000 --permutation-count 100
+
+# Disable number suffixes
+passgen --no-numbers --output simple_passwords.txt
+```
+
+## Usage
+
+```
+usage: passgen [-h] [-o OUTPUT] [-d DICTIONARY] [--dictionary-file DICTIONARY_FILE]
+               [--max-permutations N] [--permutation-count N] [--permutation-length N]
+               [--no-permutations] [--no-numbers] [--no-special-prefix] [--max-digit-length N]
+               [--separators SEPARATORS] [--seed SEED] [--max-cpu PERCENT] [-v] [--version]
+
+Generate password variations with multiple transformations.
+
+options:
+  -h, --help            show this help message and exit
+  -o OUTPUT, --output OUTPUT
+                        Output file path (default: passwords.txt)
+  -d DICTIONARY, --dictionary DICTIONARY
+                        Comma-separated list of words (e.g., "apple,banana,car")
+  --dictionary-file DICTIONARY_FILE
+                        Path to file containing dictionary words (one per line)
+  --max-permutations N  Maximum number of permutations to generate (default: 100000)
+  --permutation-count N
+                        Number of random permutations to generate (default: 1000)
+  --permutation-length N
+                        Length of random permutations (default: 4)
+  --no-permutations     Skip random character permutations
+  --no-numbers          Skip adding numerical suffixes
+  --no-special-prefix   Skip adding "@" prefix with digits
+  --max-digit-length N  Maximum number of digits for suffixes (default: 4)
+  --separators SEPARATORS
+                        Custom separator characters (default: special chars)
+  --seed SEED           Random seed for reproducible output
+  --max-cpu PERCENT     Maximum CPU usage before throttling (default: 80)
+  -v, --verbose         Enable verbose logging
+  --version             show program's version number and exit
+```
+
+## Development
+
+### Setup
+
+```bash
+# Install development dependencies
+make install-dev
+
+# Or manually:
+pip install -e ".[dev]"
+```
+
+### Running Tests
+
+```bash
+# Run all tests
+make test
+
+# Run with coverage
+make test-cov
+
+# Run specific test file
+pytest tests/test_core.py
+```
+
+### Code Quality
+
+```bash
+# Run all linting
+make lint
+
+# Format code
+make format
+
+# Check formatting
+make format-check
+
+# Run type checking
+make type-check
+```
+
+### Available Make Targets
+
+| Target | Description |
+|--------|-------------|
+| `install` | Install the package |
+| `install-dev` | Install with development dependencies |
+| `test` | Run all tests |
+| `test-cov` | Run tests with coverage |
+| `lint` | Run all linting checks |
+| `format` | Format code with black and ruff |
+| `format-check` | Check code formatting |
+| `type-check` | Run mypy type checking |
+| `clean` | Remove build artifacts |
+| `build` | Build the package |
+| `run` | Run the password generator |
+
+## How It Works
+
+The generator applies transformations in sequence:
+
+1. **Capitalized & Lowercase**: Dictionary words in both forms
+2. **Random Permutations**: Random character combinations instead of exhaustive (prevents infinite runtime)
+3. **Character Replacements**: a→@, o→0, i→1, s→5, etc.
+4. **Numbered Variations**: Words with digit separators and suffixes
+5. **Special Prefixes**: Words with @ prefix and digit suffix
+
+## Configuration
+
+### Dictionary File
+
+Create a file with one word per line:
+
+```
+# words.txt
+apple
+banana
+car
+dog
+```
+
+Use with: `passgen --dictionary-file words.txt`
+
+### Environment Variables
+
+```bash
+# Set default output file
+export PASSGEN_OUTPUT=/path/to/passwords.txt
+
+# Set CPU limit
+export PASSGEN_MAX_CPU=70
+```
+
+## Architecture
+
+```
+.
+├── src/
+│   └── password_generator/
+│       ├── __init__.py       # Package init
+│       ├── cli.py            # Command-line interface
+│       ├── core.py           # Core generation logic
+│       ├── transformers.py   # Text transformation utilities
+│       └── utils.py          # Logging and CPU monitoring
+├── tests/
+│   ├── test_cli.py
+│   ├── test_core.py
+│   └── test_transformers.py
+├── pyproject.toml            # Package configuration
+├── Makefile                # Build automation
+└── README.md               # This file
+```
+
+## Why Not Exhaustive Permutations?
+
+The original script attempted exhaustive permutations of 4-12 character alphabet combinations:
+
+```python
+# This creates astronomical numbers that never finish
+itertools.permutations(alphabet, length)  # length 4-12
+```
+
+This version uses **random sampling** with configurable limits:
+
+```python
+# Fast and bounded
+random.choices(alphabet, k=length)  # N random samples
+```
+
+For reference:
+- 26P4 = 358,800
+- 26P5 = 7,893,600
+- 26P6 = 165,765,600
+- 26P12 = ~10^14
+
+## License
+
+MIT License - See LICENSE file for details.
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing`)
+3. Run tests and linting (`make test lint`)
+4. Commit changes (`git commit -m 'Add amazing feature'`)
+5. Push to branch (`git push origin feature/amazing`)
+6. Open a Pull Request
