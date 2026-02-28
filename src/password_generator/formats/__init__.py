@@ -5,7 +5,7 @@ from .json_formatter import JSONFormatter
 from .csv_formatter import CSVFormatter
 from .hash_formatter import HashFormatter
 from .qr_formatter import QRFormatter
-from .factory import get_formatter
+from .factory import get_formatter, list_formatters
 
 __all__ = [
     "OutputFormatter",
@@ -15,4 +15,5 @@ __all__ = [
     "HashFormatter",
     "QRFormatter",
     "get_formatter",
+    "list_formatters",
 ]
