@@ -223,6 +223,7 @@ class PasswordSettings(BaseSettings):
 
 # Global settings instance
 _settings: Optional[PasswordSettings] = None
+_current_profile: Optional[Profile] = None
 
 
 def get_settings(
@@ -238,12 +239,15 @@ def get_settings(
     Returns:
         Settings instance.
     """
-    global _settings
+    global _settings, _current_profile
     
-    if _settings is None or reload:
+    # Reload if: not initialized, reload flag, or different profile requested
+    if _settings is None or reload or (profile is not None and profile != _current_profile):
         if profile:
             _settings = PasswordSettings.from_profile(profile)
+            _current_profile = profile
         else:
             _settings = PasswordSettings()
+            _current_profile = Profile.SECURE
             
     return _settings

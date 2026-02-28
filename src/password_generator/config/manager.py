@@ -58,13 +58,17 @@ class ConfigManager:
         """
         self.ensure_config_dir()
         
+        def clean_dict(d):
+            """Remove None values from dict for TOML serialization."""
+            return {k: v for k, v in d.items() if v is not None}
+        
         data = {
             "profile": settings.profile.value,
-            "generator": settings.generator.model_dump(),
-            "passphrase": settings.passphrase.model_dump(),
-            "output": settings.output.model_dump(),
-            "security": settings.security.model_dump(),
-            "performance": settings.performance.model_dump(),
+            "generator": clean_dict(settings.generator.model_dump()),
+            "passphrase": clean_dict(settings.passphrase.model_dump()),
+            "output": clean_dict(settings.output.model_dump()),
+            "security": clean_dict(settings.security.model_dump()),
+            "performance": clean_dict(settings.performance.model_dump()),
         }
         
         with open(self.config_path, "wb") as f:

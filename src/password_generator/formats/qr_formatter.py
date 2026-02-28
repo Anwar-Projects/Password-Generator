@@ -93,31 +93,37 @@ class QRFormatter(OutputFormatter):
         img = self._create_qr(password)
         
         if include_text:
-            # Add password label at bottom
-            from PIL import Image, ImageDraw, ImageFont
-            
-            # Create base image
-            width, height = img.size
-            new_height = height + 30
-            new_img = Image.new('RGB', (width, new_height), 'white')
-            new_img.paste(img, (0, 0))
-            
-            # Add text
-            draw = ImageDraw.Draw(new_img)
-            
-            # Try to use a nice font, fall back to default
             try:
-                font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 14)
-            except:
-                font = ImageFont.load_default()
-            
-            text = f"Password: {password[:4]}{'*' * (len(password) - 4)}"
-            bbox = draw.textbbox((0, 0), text, font=font)
-            text_width = bbox[2] - bbox[0]
-            text_x = (width - text_width) // 2
-            draw.text((text_x, height + 5), text, fill="black", font=font)
-            
-            img = new_img
+                from PIL import Image, ImageDraw, ImageFont
+                
+                # Create base image with space for text
+                width, height = img.size
+                new_height = height + 30
+                new_img = Image.new('RGB', (width, new_height), 'white')
+                new_img.paste(img, (0, 0))
+                
+                # Add text
+                draw = ImageDraw.Draw(new_img)
+                
+                # Try to use a nice font, fall back to default
+                try:
+                    font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 14)
+                except Exception:
+                    font = ImageFont.load_default()
+                
+                # Create masked password text
+                text = f"Password: {password[:4]}{'*' * (len(password) - 4)}"
+                
+                # Simple center calculation - approximate
+                text_x = max(10, (width - len(text) * 7) // 2)
+                
+                # Draw text without calculating bbox
+                draw.text((text_x, height + 8), text, fill="black", font=font)
+                
+                img = new_img
+            except Exception:
+                # If text addition fails, just save the QR code
+                pass
         
         img.save(path, format=self.image_format)
         return path
