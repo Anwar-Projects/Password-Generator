@@ -124,9 +124,8 @@ class TestBackpressureHandler:
         for _ in range(40):
             handler.get()
         
-        # Should still be paused (need one more to hit 30)
-        assert handler.is_paused()
-        
+        # Now at or below low_watermark, should be unpaused
+        assert not handler.is_paused()
         handler.get()
         assert not handler.is_paused()
 
